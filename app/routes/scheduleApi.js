@@ -1,24 +1,31 @@
 module.exports = function(app, db, moment) {
 
-    app.get(
-        '/schedule/:occurance(\\d+)/:every(\\d+)/:starting_date/:index(\\d+)/:day_of_week(\\d+)', function(req, res) {
+    Date.prototype.nextSecondDay= function(day_of_week){
+        var temp= new Date(this), d= temp.getDate(), n= 1;
+        while(temp.getDay()!= day_of_week) temp.setDate(++n);
+        temp.setDate(n+7);
+        if(d>temp.getDate()){
+            temp.setMonth(temp.getMonth()+1, 1);
+            return temp.nextSecondDay(day_of_week);
+        }
+        return temp.toLocaleDateString();
+    }
+
+    app.get('/schedule/:occurance(\\d+)/:every(\\d+)/:starting_date/:index(\\d+)/:day_of_week(\\d+)', function(req, res) {
        
         var dates = new Array(); 
-        let occurance = parseInt(req.params.occurance)+1;       
+        let occurance = parseInt(req.params.occurance);       
         let every = parseInt(req.params.every);             // 1 ayda 2 ayda x ayda
-        let startDate = moment(req.params.starting_date);   // baslangic
+        let startDate = moment(req.params.starting_date).toDate();   // baslangic
         let indexDay = parseInt(req.params.index);          // kacinci hafta
         let dayOfWeek = parseInt(req.params.day_of_week);   // kacinci gun
-        let startDateCopy = moment(startDate).clone();
+
+        let startDateCopy = moment(startDate).clone().toDate();        
 
         for (var i = 0; i < occurance; i++) {
-            if(i == 0){ // girilen tarihteki uygun tarih yoksa
-
-            }
-            var testDate = moment().day(dayOfWeek).year(startDateCopy.year).week(indexDay).toDate();
-            dates.push(moment(testDate).format("YYYY-MM-DD"));
-            startDateCopy = moment(startDateCopy).add(every, 'months');
-            
+            var tmpDate1 = startDateCopy.nextSecondDay(dayOfWeek);
+            dates.push(moment(tmpDate1).format("YYYY-MM-DD"));
+            startDateCopy = moment(startDateCopy).add(every, 'months').startOf('month').toDate();
         }
         res.json(dates);
     });
