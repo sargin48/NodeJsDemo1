@@ -4,12 +4,8 @@ var bodyParser = require('body-parser');
 var moment = require('moment');
 var db = require('./models');
 var path = require('path');
-var apiRoutes = require('./app/routes/apiRoutes.js');
-var taskApi = require('./app/routes/taskApi.js');
-var scheduleApi = require('./app/routes/scheduleApi.js');
-var lcsApi = require('./app/routes/lcsApi.js');
 var routes = require('./app/routes/index');
-
+var myService = require('./app/service/myService.js')
 var PORT = process.env.PORT || 3000;
 
 app.set('views', path.join(__dirname, 'app/views'));
@@ -23,13 +19,16 @@ app.use(bodyParser.json({ type: 'application/vnd.api+json'}));
 
 app.use(express.static('app/public'));
 app.use('/', routes);
-apiRoutes(app, db);
-taskApi(app, db);
-scheduleApi(app, db, moment);
-new lcsApi(app, db);
+require('./app/routes/apiRoutes.js')(app, db);
+require('./app/routes/taskApi.js')(app, db);
+require('./app/routes/scheduleApi.js')(app, db, moment, myService);
+require('./app/routes/lcsApi.js')(app, db, myService);
 
-db.sequelize.sync().then(function() {
-    app.listen(PORT, function() {
-        console.log('listen port ${PORT}');
-    });
+// db.sequelize.sync().then(function() {
+//     app.listen(PORT, function() {
+//         console.log('listen port ${PORT}');
+//     });
+// });
+app.listen(PORT, function() {
+    console.log('listen port ${PORT}');
 });
