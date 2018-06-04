@@ -2,3 +2,4 @@
 sequelize init:models init:config
 
 node_modules/.bin/sequelize init:models init:config
+node_modules/.bin/sequelize init:config
