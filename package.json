@@ -18,10 +18,10 @@
     "mysql2": "^1.5.3",
     "pug": "^2.0.3",
     "sequelize": "^4.37.9",
-    "sequelize-cli": "^4.0.0",
     "serve-favicon": "^2.5.0"
   },
   "devDependencies": {
-    "nodemon": "^1.17.5"
+    "nodemon": "^1.17.5",
+    "sequelize-cli": "^4.1.1"
   }
 }
